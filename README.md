@@ -6,6 +6,34 @@
 ## Данные
 [Telco Customer Churn (IBM)](https://www.kaggle.com/datasets/blastchar/telco-customer-churn), Kaggle `blastchar/telco-customer-churn`: 7 043 строки, 21 столбец (демография: `gender`, `SeniorCitizen`, `Partner`, `Dependents`; услуги; договор, способ оплаты, `MonthlyCharges`, `TotalCharges`; `tenure`). Возраста в датасете нет, есть только флаг `SeniorCitizen`. Target — `Churn` (Yes/No → 1/0), ≈ 26.5% ушедших / 73.5% оставшихся. Ловушка: в `TotalCharges` лежат пробелы (11 строк, все с `tenure = 0`), из-за них колонка читается как `object`.
 
+## EDA
+Запуск: `python -m src.eda` (в Docker: `docker compose --profile train run --rm trainer python -m src.eda`). Графики сохраняются в `reports/eda/`, текстовые выводы с точными числами (churn rate по категориям, skew, корреляции) — в `reports/eda_summary.md`.
+
+**1. Целевая переменная.** Классы несбалансированы: ушли ≈ 26.5% клиентов. Константа «остался» даёт accuracy ≈ 73.5% и бесполезна для бизнеса, поэтому основная метрика — PR-AUC, а разбиения стратифицированы.
+
+![Распределение Churn](reports/eda/01_target.png)
+
+**2. Пропуски.** Формальных NaN нет, но в `TotalCharges` скрыта «ловушка»: 11 значений — пробелы, из-за которых колонка читается как строка. Все они у клиентов с `tenure = 0` (ещё не было счёта), поэтому заполняем `MonthlyCharges × tenure = 0`.
+
+![Пропуски](reports/eda/02_missing.png)
+
+**3. Числовые признаки.** Ушедшие клиенты в среднем «моложе» (меньше `tenure`) и платят больше (`MonthlyCharges`). `TotalCharges` скошен вправо, поэтому его верхний хвост ограничивается (winsorizing); ошибок данных и экстремальных выбросов нет.
+
+![Числовые признаки](reports/eda/03_numeric.png)
+
+**4. Churn rate по категориям.** Красная линия — средний уровень оттока. Сильнее всего от среднего отличаются тип контракта, тип интернета (оптоволокно хуже), способ оплаты (электронный чек хуже), наличие техподдержки и онлайн-безопасности. `gender` почти не различает клиентов.
+
+![Churn rate по категориям](reports/eda/04_churn_by_category.png)
+
+**5. Корреляции.** Heatmap построен по признакам после FE. Видна сильная связь `tenure` и `TotalCharges` (мультиколлинеарность: линейной модели помогают регуляризация и масштабирование, деревьям она не мешает), а также зависимости между услугами и типом интернета.
+
+![Корреляции](reports/eda/05_correlation.png)
+
+**Что EDA означает для модели:**
+- информативные признаки: контракт, `tenure`, тип интернета, способ оплаты, доп. услуги (позже это подтверждает SHAP);
+- нужны преобразования: `TotalCharges` (пробелы и скошенность), «No internet service» → 0, нелинейность по `tenure` (признак `is_new_customer`), средний чек (`avg_charge_per_month`);
+- `gender` слабо информативен, но оставлен: деревья сами отсеют шум.
+
 ## Результаты
 Hold-out 20% (n=1409, 374 ушедших), `random_state=42`. Таблица также генерируется автоматически в `reports/results.md`.
 
@@ -110,6 +138,8 @@ make mlflow-ui                  # http://localhost:5000 (эксперимент�
 docker compose --profile train run --rm trainer
 # 2) поднять сервис
 docker compose up --build        # → http://localhost:8000
+# (опционально) EDA в контейнере → reports/eda/ и reports/eda_summary.md
+docker compose --profile train run --rm trainer python -m src.eda
 # (опционально) MLflow UI
 docker compose --profile mlflow up mlflow    # → http://localhost:5000
 ```
