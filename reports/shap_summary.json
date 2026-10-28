@@ -1,0 +1,69 @@
+{
+  "note": "Вклады — в log-odds (LightGBM) или в вероятности (RandomForest). Направление: знак корреляции между значением признака и SHAP-вкладом.",
+  "global_importance_mean_abs_shap": {
+    "Contract_Month_to_month": 0.7359,
+    "tenure": 0.3302,
+    "InternetService_Fiber_optic": 0.2802,
+    "PaymentMethod_Electronic_check": 0.1717,
+    "Contract_Two_year": 0.1624,
+    "InternetService_No": 0.1504,
+    "MonthlyCharges": 0.1421,
+    "PaperlessBilling": 0.1225,
+    "StreamingMovies": 0.092,
+    "OnlineSecurity": 0.0901,
+    "TotalCharges": 0.0802,
+    "StreamingTV": 0.0702,
+    "Contract_One_year": 0.0674,
+    "TechSupport": 0.0634,
+    "MultipleLines": 0.0574
+  },
+  "top5_increase_risk": {
+    "Contract_Month_to_month": 0.7359,
+    "InternetService_Fiber_optic": 0.2802,
+    "PaymentMethod_Electronic_check": 0.1717,
+    "MonthlyCharges": 0.1421,
+    "PaperlessBilling": 0.1225
+  },
+  "top5_decrease_risk": {
+    "tenure": 0.3302,
+    "Contract_Two_year": 0.1624,
+    "InternetService_No": 0.1504,
+    "OnlineSecurity": 0.0901,
+    "TotalCharges": 0.0802
+  },
+  "local_explanations": {
+    "highest_risk": {
+      "row": 1090,
+      "churn_probability": 0.8694,
+      "top_contributions": {
+        "Contract_Month_to_month": 0.8446,
+        "tenure": 0.7501,
+        "InternetService_Fiber_optic": 0.3283,
+        "TotalCharges": 0.2751,
+        "PaymentMethod_Electronic_check": 0.2281
+      }
+    },
+    "near_threshold": {
+      "row": 1033,
+      "churn_probability": 0.3133,
+      "top_contributions": {
+        "Contract_Month_to_month": 0.791,
+        "tenure": 0.7707,
+        "InternetService_Fiber_optic": -0.3488,
+        "InternetService_No": -0.2925,
+        "TotalCharges": 0.2911
+      }
+    },
+    "lowest_risk": {
+      "row": 1344,
+      "churn_probability": 0.0113,
+      "top_contributions": {
+        "Contract_Month_to_month": -0.7612,
+        "tenure": -0.5597,
+        "InternetService_No": -0.3047,
+        "Contract_Two_year": -0.3041,
+        "MonthlyCharges": -0.2062
+      }
+    }
+  }
+}

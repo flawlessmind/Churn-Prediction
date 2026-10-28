@@ -1,0 +1,11 @@
+# Минимальный набор для inference-сервиса (Docker runtime-образ).
+# Версии пинуются: pickle-модель должна загружаться теми же версиями sklearn/lightgbm, что обучали.
+numpy==2.1.3
+pandas==2.2.3
+scikit-learn==1.6.1
+lightgbm==4.5.0
+joblib==1.4.2
+fastapi==0.115.8
+uvicorn[standard]==0.34.0
+pydantic==2.10.6
+structlog==25.1.0

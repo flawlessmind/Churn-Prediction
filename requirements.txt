@@ -1,0 +1,5 @@
+# Полное окружение для разработки: pip install -r requirements.txt
+-r requirements-serve.txt
+-r requirements-train.txt
+pytest==8.3.4
+httpx==0.28.1
